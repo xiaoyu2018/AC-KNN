@@ -135,6 +135,7 @@ venv.bak/
 data/
 *.txt
 *.json
+*tmp*
 
 # Rope project settings
 .ropeproject
