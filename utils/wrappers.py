@@ -8,5 +8,6 @@ def time_counter(func):
         end=time()
         print("------------------------------------------")
         print(f"time consumed: {end-start}s")
+        print("------------------------------------------")
         return res
     return wrapper
