@@ -41,10 +41,21 @@ class MyKnn:
         mat=pairwise.euclidean_distances(test_data,core_samples)
         # 样本*候选聚簇矩阵，表示聚簇j是不是第i个样本的候选聚簇
         mat=mat<=max_dists
-        
+
         res = []
         # 对每条测试样本分别筛选候选聚簇，并得出预测结果
-        # for t_sample in self.test_data:
+        for i in range(len(self.test_data)):
+            tmp=[]
+            for j in range(N):
+                if(mat[i][j]):
+                    # todo: 找到每个簇里最近的样本
+                    ...
+            # 没有候选聚簇直接判定为异常样本
+            if(len(tmp)==0):
+                res.append(-1)
+            else:
+                # todo：统计得出预测结果
+                ...
 
         # 返回预测类别
         return np.array(res)
