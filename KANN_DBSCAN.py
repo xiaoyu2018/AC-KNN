@@ -1,7 +1,7 @@
 import copy
 import numpy as np
 from sklearn.cluster import DBSCAN
-import sklearn.metrics.pairwise as pairwise
+from sklearn.metrics import pairwise
 from utils.wrappers import time_counter
 
 class KANN_DBSCAN:
@@ -127,10 +127,10 @@ if __name__ =='__main__':
     res=run_KD(data)
     print(f"best param:{res}")
 
-    # ds=DBSCAN(eps=res[0],min_samples=res[1])
-    # labels=ds.fit(data).labels_
-    # p_data=pd.DataFrame(data={"A":data[:,0].flatten(),"B":data[:,1].flatten(),"L":labels})
-    # sns.scatterplot(data=p_data,x="A",y="B",hue="L")
-    # plt.show()
+    ds=DBSCAN(eps=res[0],min_samples=res[1])
+    labels=ds.fit(data).labels_
+    p_data=pd.DataFrame(data={"A":data[:,0].flatten(),"B":data[:,1].flatten(),"L":labels})
+    sns.scatterplot(data=p_data,x="A",y="B",hue="L")
+    plt.show()
 
     
