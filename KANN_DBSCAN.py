@@ -85,32 +85,23 @@ class KANN_DBSCAN:
         # 退化为普通KNN
         return self.all_param_list[-1][1:]
     
-    def saveIndex(self,file_name:str):
+    def saveIndices(self,file_name:str):
         """
         param file_name:保存的聚簇索引json文件名
         保存聚簇索引
         """
 
         import json
+        from utils.transformers import ToJson
         eps,minpts=self._getBestCluster()
         db = DBSCAN(eps=eps, min_samples=minpts).fit(self.X)
         N=max(db.labels_)+1
         clusters=[self.X[np.where(db.labels_==i)] for i in range(N)]
         labels=[self.label[np.where(db.labels_==i)] for i in range(N)]
-            
-        cores=[np.mean(cluster,axis=0) for cluster in clusters]
         
-        indices=[
-            {
-                "core_sample":cores[i].tolist(),
-                "max_dist":np.max(np.linalg.norm(clusters[0]-cores[0],axis=1)).item(),
-                "full_cluster":[{"sample":clusters[i][j].tolist(),"label":labels[i][j].item()} for j in range(clusters[i].shape[0])]
-            }
-            for i in range(N)
-        ]
-        # print(indices)
+        js=ToJson(clusters,labels,N)
         with open(f"./{file_name}.json","w") as f:
-            json.dump(indices,f)
+            json.dump(js,f)
 
 
 if __name__ =='__main__':
@@ -119,7 +110,7 @@ if __name__ =='__main__':
         kd=KANN_DBSCAN(data)
         kd.fit()
         # print(kd.get_info_dict())
-        kd.saveIndex("test_indices")
+        kd.saveIndices("test_indices")
         return kd._getBestCluster()
     
     from sklearn.preprocessing import MinMaxScaler

@@ -6,7 +6,7 @@ def time_counter(func):
         start=time()
         res=func(*args,**kwargs)
         end=time()
-        print("------------------------------------------")
+        print(f"------------------{func.__name__}-----------------")
         print(f"time consumed: {end-start}s")
         print("------------------------------------------")
         return res
