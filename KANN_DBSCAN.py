@@ -4,7 +4,7 @@ from sklearn.cluster import DBSCAN
 from sklearn.metrics import pairwise
 from utils.wrappers import time_counter
 
-class KANN_DBSCAN:
+class KANNDBSCAN:
 
     def __init__(self,data:np.ndarray):
         self.X=data[:,:-1]
@@ -107,7 +107,7 @@ class KANN_DBSCAN:
 if __name__ =='__main__':
     @time_counter
     def run_KD(data):
-        kd=KANN_DBSCAN(data)
+        kd=KANNDBSCAN(data)
         kd.fit()
         # print(kd.get_info_dict())
         kd.saveIndices("test_indices")

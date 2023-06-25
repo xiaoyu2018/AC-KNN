@@ -35,7 +35,6 @@ class MyKnn:
         # 从这里开始计时
         for i in range(N):
             classifiers[i].fit(clusters[i], labels[i])
-
         
         # 测试样本i到第j个聚簇核心点的距离
         mat=pairwise.euclidean_distances(test_data,core_samples)
@@ -45,17 +44,19 @@ class MyKnn:
         res = []
         # 对每条测试样本分别筛选候选聚簇，并得出预测结果
         for i in range(len(self.test_data)):
-            tmp=[]
+            tmp={}
             for j in range(N):
                 if(mat[i][j]):
                     # todo: 找到每个簇里最近的样本
-                    ...
+                    crt_dist,crt_sample=classifiers[j].kneighbors(self.test_data[i].reshape((1,-1)))
+                    crt_label=labels[j][crt_sample.item()]
+                    tmp[crt_label]=tmp.get(crt_label,0)+1/(1+crt_dist[0])
             # 没有候选聚簇直接判定为异常样本
             if(len(tmp)==0):
                 res.append(-1)
             else:
                 # todo：统计得出预测结果
-                ...
+                res.append(sorted(tmp.items(), key=lambda x: x[1])[0][0])
 
         # 返回预测类别
         return np.array(res)
@@ -86,22 +87,22 @@ if __name__ == "__main__":
     # print(mk.classifyByKNN(train_data))
 
     # -----improved_KNN-----
-    # with open("./test_indices.json","r") as f:
-    #     js=json.load(f)
-    #     mk=MyKnn(test_data,scaler)
-    #     mk.classifyByImprovedKNN(js)
+    with open("./test_indices.json","r") as f:
+        js=json.load(f)
+        mk=MyKnn(test_data,scaler)
+        print(mk.classifyByImprovedKNN(js))
 
     
 
-    core_samples = np.array([
-            [0.77306938, 0.82167679, 0.8396377], 
-            [0.50482839, 0.52072752, 0.59595394]
-            ])
-    max_dists=np.array([0.30798244,4])
-    # 测试样本i到第j个聚簇核心点的距离
-    mat=pairwise.euclidean_distances(
-        test_data,core_samples
-    )
-    mat=mat<=max_dists
-    print(mat)
+    # core_samples = np.array([
+    #         [0.77306938, 0.82167679, 0.8396377], 
+    #         [0.50482839, 0.52072752, 0.59595394]
+    #         ])
+    # max_dists=np.array([0.30798244,4])
+    # # 测试样本i到第j个聚簇核心点的距离
+    # mat=pairwise.euclidean_distances(
+    #     test_data,core_samples
+    # )
+    # mat=mat<=max_dists
+    # print(mat)
     # print(np.linalg.norm(np.array([0.77306, 0.8216767, 0.83963])-np.array([0.50482839, 0.52072752, 0.59595394])))
