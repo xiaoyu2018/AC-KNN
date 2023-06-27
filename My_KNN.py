@@ -9,10 +9,10 @@ class MyKnn:
         scaler.transform(self.test_data)
 
     @wrappers.time_counter
-    def classifyByKNN(self, train_data: str):
+    def classifyByKNN(self, X:np.ndarray,y:np.ndarray):
 
         classifer = knn(algorithm="brute")
-        classifer.fit(train_data[:, :-1], train_data[:, -1:])
+        classifer.fit(X, y)
 
         return classifer.predict(self.test_data)
 
@@ -84,7 +84,7 @@ if __name__ == "__main__":
     # train_data[:,:-1]=scaler.transform(train_data[:,:-1])
 
     # mk=MyKnn(test_data,scaler)
-    # print(mk.classifyByKNN(train_data))
+    # print(mk.classifyByKNN(train_data[:,:-1],train_data[:,-1:]))
 
     # -----improved_KNN-----
     with open("./test_indices.json","r") as f:

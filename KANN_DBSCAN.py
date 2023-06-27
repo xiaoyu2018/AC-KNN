@@ -3,12 +3,13 @@ import numpy as np
 from sklearn.cluster import DBSCAN
 from sklearn.metrics import pairwise
 from utils.wrappers import time_counter
+from tqdm import tqdm
 
 class KANNDBSCAN:
 
-    def __init__(self,data:np.ndarray):
-        self.X=data[:,:-1]
-        self.label=data[:,-1:].astype(np.int8)
+    def __init__(self,X:np.ndarray,y:np.ndarray):
+        self.X=X
+        self.label=y.astype(np.int8)
         self.DistMatrix=0 #距离矩阵
         self.EpsCandidates=None #候选Eps集合
         self.MinptsCandidates=None #候选MinPts集合
@@ -39,19 +40,23 @@ class KANNDBSCAN:
         return MinptsCandidates
 
     def fit(self):
+        print("正在生成候选eps...")
         self.EpsCandidates = self._returnEpsCandidates()
+        print("正在生成候选minpts...")
         self.MinptsCandidates = self._returnMinptsCandidates(
             self.DistMatrix, self.EpsCandidates
         )
+        print("----------开始尝试多次聚类----------")
         self._doMultiDbscan()
-        
+        print("----------所有聚类信息如下----------")
+        print(self.all_param_list)
 
     def _doMultiDbscan(self):
         # 根据候选Eps和MinPts多次进行聚类
         # self.all_predict_list = []
         self.all_param_list = []
 
-        for i in range(len(self.EpsCandidates)):
+        for i in tqdm(range(len(self.EpsCandidates)),desc="尝试聚类进度"):
             eps = self.EpsCandidates[i]
             minpts = self.MinptsCandidates[i]
             
@@ -94,6 +99,8 @@ class KANNDBSCAN:
         import json
         from utils.transformers import ToJson
         eps,minpts=self._getBestCluster()
+        print("----------最优参数如下----------")
+        print(f"best_eps:{eps},nest_minpts:{minpts}")
         db = DBSCAN(eps=eps, min_samples=minpts).fit(self.X)
         N=max(db.labels_)+1
         clusters=[self.X[np.where(db.labels_==i)] for i in range(N)]
@@ -106,8 +113,8 @@ class KANNDBSCAN:
 
 if __name__ =='__main__':
     @time_counter
-    def run_KD(data):
-        kd=KANNDBSCAN(data)
+    def run_KD(X,y):
+        kd=KANNDBSCAN(X,y)
         kd.fit()
         # print(kd.get_info_dict())
         kd.saveIndices("test_indices")
@@ -124,7 +131,7 @@ if __name__ =='__main__':
     scaler.fit(data[:,:-1])
     data[:,:-1]=scaler.transform(data[:,:-1])
     
-    res=run_KD(data)
+    res=run_KD(data[:,:-1],data[:,-1:])
     print(f"best param:{res}")
 
     ds=DBSCAN(eps=res[0],min_samples=res[1])
@@ -132,5 +139,6 @@ if __name__ =='__main__':
     p_data=pd.DataFrame(data={"A":data[:,0].flatten(),"B":data[:,1].flatten(),"L":labels})
     sns.scatterplot(data=p_data,x="A",y="B",hue="L")
     plt.show()
+    
 
     
