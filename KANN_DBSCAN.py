@@ -122,7 +122,7 @@ if __name__ =='__main__':
     
     from sklearn.preprocessing import MinMaxScaler
     import seaborn as sns
-    from matplotlib import pyplot as plt   
+    from matplotlib import pyplot as plt
     import pandas as pd 
 
     data=np.loadtxt("./mocked_data5.txt",delimiter=" ",dtype=np.float32)

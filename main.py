@@ -4,12 +4,14 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 import pandas as pd
+import json
+
 
 def load_data(file_path: str,if_csv:bool):
     if(if_csv):
         df=pd.read_csv(file_path)
         return df.to_numpy()
-    return np.loadtxt(file_path, dtype=np.float32, delimiter=",")
+    return np.loadtxt(file_path, dtype=np.float32, delimiter=" ")
 
 
 def preprocess(data: np.ndarray, split: bool):
@@ -39,17 +41,22 @@ def train(X,y,indices_name:str):
     model.saveIndices(indices_name)
 
 
-def test(train_X, train_y, test_X, scaler:MinMaxScaler,mode:str):
+def test(train_X, train_y, test_X, scaler:MinMaxScaler,mode:str,indices_path:str):
     train_X=scaler.transform(train_X)
-    
+    pred=None
+    model=MyKnn(test_X,scaler)
+
     if(mode=="KNN"):
-        model=MyKnn(test_X,scaler)
-        model.classifyByKNN(train_X,train_y)
+        pred=model.classifyByKNN(train_X,train_y)
+
     elif(mode=="Improved_KNN"):
-        ...
+        with open(indices_path,"r") as f:
+            indices=json.load(f)
+            pred=model.classifyByImprovedKNN(indices)
     else:
         raise("unimplemented model")
 
+    return pred
 
 def evaluate():
     ...
@@ -60,8 +67,8 @@ def go():
 
 
 if __name__ == "__main__":
-    data=load_data("./data/1.csv",True)
+    data=load_data("./data/final_data.txt",False)
     train_X, train_y, test_X, test_y, scaler=preprocess(data,split=True)
     
-    # train(train_X,train_y,"1")
-    test()
+    train(train_X,train_y,"1")
+    # test()
