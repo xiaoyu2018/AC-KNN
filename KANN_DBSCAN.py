@@ -4,12 +4,14 @@ from sklearn.cluster import DBSCAN
 from sklearn.metrics import pairwise
 from utils.wrappers import time_counter
 from tqdm import tqdm
+import pickle as pkl
+
 
 class KANNDBSCAN:
 
     def __init__(self,X:np.ndarray,y:np.ndarray):
         self.X=X
-        self.label=y.astype(np.int8)
+        self.y=y.astype(np.int8)
         self.DistMatrix=0 #距离矩阵
         self.EpsCandidates=None #候选Eps集合
         self.MinptsCandidates=None #候选MinPts集合
@@ -50,11 +52,16 @@ class KANNDBSCAN:
         self._doMultiDbscan()
         print("----------所有聚类信息如下----------")
         print(self.all_param_list)
+        with open("./cluster_info.pkl","wb") as f:
+            pkl.dump(self.all_param_list,f)
 
     def _doMultiDbscan(self):
         # 根据候选Eps和MinPts多次进行聚类
         # self.all_predict_list = []
         self.all_param_list = []
+
+        # 早停机制
+        count=0
 
         for i in tqdm(range(len(self.EpsCandidates)),desc="尝试聚类进度"):
             eps = self.EpsCandidates[i]
@@ -62,6 +69,12 @@ class KANNDBSCAN:
             
             db = DBSCAN(eps=eps, min_samples=minpts).fit(self.X)
             num_clusters = max(db.labels_) + 1
+            
+            # 早停机制
+            if(num_clusters==1):
+                count+=1
+            if(count>9):
+                break
 
             # self.all_predict_list.append(db.labels_)
             self.all_param_list.append((num_clusters,eps,minpts))
@@ -103,8 +116,9 @@ class KANNDBSCAN:
         print(f"best_eps:{eps},nest_minpts:{minpts}")
         db = DBSCAN(eps=eps, min_samples=minpts).fit(self.X)
         N=max(db.labels_)+1
-        clusters=[self.X[np.where(db.labels_==i)] for i in range(N)]
-        labels=[self.label[np.where(db.labels_==i)] for i in range(N)]
+        # 直接去除了噪声
+        clusters=[self.X[db.labels_==i] for i in range(N)]
+        labels=[self.y[db.labels_==i] for i in range(N)]
         
         js=ToJson(clusters,labels,N)
         with open(f"./{file_name}.json","w") as f:

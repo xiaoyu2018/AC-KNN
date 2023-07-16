@@ -5,7 +5,11 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 import pandas as pd
 import json
+import seaborn as sns
+from utils import wrappers
 
+sns.set_style("darkgrid")
+sns.set_context("paper")
 
 def load_data(file_path: str,if_csv:bool):
     if(if_csv):
@@ -23,7 +27,7 @@ def preprocess(data: np.ndarray, split: bool):
     if(split):
         
         train_X, test_X, train_y, test_y = train_test_split(
-            X, y, test_size=0.2, random_state=0
+            X, y, test_size=0.2, random_state=1
         )
         scaler.fit(train_X)
         train_X=scaler.transform(train_X)
@@ -34,13 +38,13 @@ def preprocess(data: np.ndarray, split: bool):
         X=scaler.transform(X)
         return X ,y, scaler
 
-
+@wrappers.time_counter
 def train(X,y,indices_name:str):
     model=KANNDBSCAN(X,y)
     model.fit()
     model.saveIndices(indices_name)
 
-
+@wrappers.time_counter
 def test(train_X, train_y, test_X, scaler:MinMaxScaler,mode:str,indices_path:str):
     train_X=scaler.transform(train_X)
     pred=None
@@ -62,13 +66,11 @@ def evaluate():
     ...
 
 
-def go():
-    ...
 
 
 if __name__ == "__main__":
     data=load_data("./data/final_data.txt",False)
     train_X, train_y, test_X, test_y, scaler=preprocess(data,split=True)
-    
+    # print(train_y)
     train(train_X,train_y,"1")
     # test()
