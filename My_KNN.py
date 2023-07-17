@@ -28,14 +28,14 @@ class KNN_():
 
 
 class MyKnn:
-    def __init__(self, test_data: np.ndarray, scaler):
+    def __init__(self, test_data: np.ndarray):
         self.test_data = test_data
-        scaler.transform(self.test_data)
+        
 
     @wrappers.time_counter
     def classifyByKNN(self, X:np.ndarray,y:np.ndarray):
 
-        classifer = KNN_(n_neighbors=1)
+        classifer = KNN_(n_neighbors=4)
         classifer.fit(X, y)
 
         return classifer.predict(self.test_data)
