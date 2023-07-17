@@ -70,11 +70,11 @@ class KANNDBSCAN:
             db = DBSCAN(eps=eps, min_samples=minpts).fit(self.X)
             num_clusters = max(db.labels_) + 1
             
-            # 早停机制
-            if(num_clusters==1):
-                count+=1
-            if(count>9):
-                break
+            # # 早停机制
+            # if(num_clusters==1):
+            #     count+=1
+            # if(count>9):
+            #     break
 
             # self.all_predict_list.append(db.labels_)
             self.all_param_list.append((num_clusters,eps,minpts))

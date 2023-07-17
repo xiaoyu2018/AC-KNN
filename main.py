@@ -94,9 +94,9 @@ def evaluate(test_y:np.ndarray,pred1:np.ndarray,pred2:np.ndarray):
 
 def go():
     data=load_data("./data/final_data.txt",False)
-    train_X, train_y, test_X, test_y, scaler=preprocess(data,split=True)
+    train_X, train_y, test_X, test_y, _ =preprocess(data,split=True)
     # print(train_y)
-    # train(train_X,train_y,"1")
+    train(train_X,train_y,"indices")
     pred1=test(train_X, train_y, test_X,"KNN","./1.json")
     pred2=test(train_X, train_y, test_X,"Improved_KNN","./1.json")
     
