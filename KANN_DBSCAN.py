@@ -75,7 +75,8 @@ class KANNDBSCAN:
             #     count+=1
             # if(count>9):
             #     break
-
+            if(i==37):
+                break
             # self.all_predict_list.append(db.labels_)
             self.all_param_list.append((num_clusters,eps,minpts))
 
